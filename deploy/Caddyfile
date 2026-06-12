@@ -1,0 +1,24 @@
+# TLS 1.3 only — place in front of `next start` (port 3000).
+# Usage: caddy run --config deploy/Caddyfile
+#
+# Replace startup-hunt.example with your domain before deploy.
+
+startup-hunt.example {
+	tls {
+		protocols tls1.3
+	}
+
+	encode gzip
+
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+
+	reverse_proxy localhost:3000 {
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+	}
+}

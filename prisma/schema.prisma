@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  role          String    @default("PENDING")
+  requestedRole String?
+  createdAt     DateTime  @default(now())
+  startups     Startup[]
+  votes        Vote[]
+  comments     Comment[]
+  commentReplies CommentReply[]
+}
+
+model Startup {
+  id          String        @id @default(cuid())
+  title       String
+  description String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  authorId    String
+  author      User          @relation(fields: [authorId], references: [id])
+  files       StartupFile[]
+  votes       Vote[]
+  comments    Comment[]
+}
+
+model StartupFile {
+  id           String   @id @default(cuid())
+  startupId    String
+  startup      Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  isPrimary    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}
+
+model Vote {
+  id        String  @id @default(cuid())
+  userId    String
+  startupId String
+  value     Int
+  user      User    @relation(fields: [userId], references: [id])
+  startup   Startup @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, startupId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  userId    String
+  startupId String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  startup   Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  reply     CommentReply?
+
+  @@unique([userId, startupId])
+}
+
+model CommentReply {
+  id        String   @id @default(cuid())
+  commentId String   @unique
+  userId    String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+}

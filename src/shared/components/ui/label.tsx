@@ -1,0 +1,11 @@
+﻿import { cn } from '@/shared/lib/utils';
+import { LabelHTMLAttributes } from 'react';
+
+export function Label({ className, ...props }: LabelHTMLAttributes<HTMLLabelElement>) {
+  return (
+    <label
+      className={cn('text-sm font-medium leading-none', className)}
+      {...props}
+    />
+  );
+}
