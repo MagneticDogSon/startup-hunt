@@ -92,7 +92,7 @@ export function LandingPage() {
               Войти
             </Link>
             <Link
-              href="/register/founder"
+              href="/register"
               className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm shadow-primary/20 transition-all hover:bg-primary-hover"
             >
               Регистрация
@@ -372,7 +372,7 @@ export function LandingPage() {
                 </ul>
               </div>
               <Link
-                href="/register/founder"
+                href="/register"
                 className="mt-8 block w-full rounded-lg border border-border bg-gray-50 py-3 text-center text-xs font-semibold text-foreground transition-colors hover:bg-gray-100"
               >
                 Зарегистрироваться как фаундер
@@ -409,7 +409,7 @@ export function LandingPage() {
                 </ul>
               </div>
               <Link
-                href="/register/founder"
+                href="/register"
                 className="mt-8 block w-full rounded-lg border border-border bg-gray-50 py-3 text-center text-xs font-semibold text-foreground transition-colors hover:bg-gray-100"
               >
                 Подать заявку на оценщика
@@ -477,7 +477,7 @@ export function LandingPage() {
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              href="/register/founder"
+              href="/register"
               className="w-full rounded-xl bg-primary px-8 py-4 text-center text-base font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-primary/30 sm:w-auto"
             >
               Создать аккаунт бесплатно
@@ -513,12 +513,12 @@ export function LandingPage() {
               Войти
             </Link>
             <Link
-              href="/register/founder"
+              href="/register"
               className="transition-colors hover:text-primary"
             >
               Создать аккаунт
             </Link>
-            <Link href="/login" className="transition-colors hover:text-primary">
+            <Link href="/startups" className="transition-colors hover:text-primary">
               Витрина стартапов
             </Link>
           </div>

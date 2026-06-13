@@ -1,6 +1,4 @@
-﻿import { mkdir, rm, unlink, writeFile } from 'fs/promises';
-import path from 'path';
-import { prisma } from '@/shared/lib/prisma';
+﻿import { prisma } from '@/shared/lib/prisma';
 import { assertAllowedFileContent } from '@/shared/lib/file-sniff';
 import {
   isAllowedMimeType,
@@ -9,15 +7,7 @@ import {
   MAX_FILE_SIZE,
   MAX_TOTAL_FILES_SIZE,
 } from '@/shared/lib/upload';
-
-async function removeFileFromDisk(startupId: string, filename: string) {
-  const filePath = path.join(process.cwd(), 'uploads', startupId, filename);
-  try {
-    await unlink(filePath);
-  } catch {
-    // Already removed from disk.
-  }
-}
+import { putFile, removeFile, removeStartupStoragePrefix } from '@/shared/lib/storage';
 
 export async function deleteStartupFiles(startupId: string, fileIds: string[]) {
   if (fileIds.length === 0) return;
@@ -27,7 +17,7 @@ export async function deleteStartupFiles(startupId: string, fileIds: string[]) {
   });
 
   for (const file of files) {
-    await removeFileFromDisk(startupId, file.filename);
+    await removeFile(startupId, file.filename);
   }
 
   await prisma.startupFile.deleteMany({
@@ -36,12 +26,7 @@ export async function deleteStartupFiles(startupId: string, fileIds: string[]) {
 }
 
 export async function deleteStartupUploadDir(startupId: string) {
-  const uploadDir = path.join(process.cwd(), 'uploads', startupId);
-  try {
-    await rm(uploadDir, { recursive: true, force: true });
-  } catch {
-    // Directory may not exist.
-  }
+  await removeStartupStoragePrefix(startupId);
 }
 
 export async function setStartupPrimaryFile(startupId: string, fileId: string) {
@@ -99,9 +84,6 @@ export async function saveStartupFiles(
 
   await assertStartupFileQuota(startupId, validFiles);
 
-  const uploadDir = path.join(process.cwd(), 'uploads', startupId);
-  await mkdir(uploadDir, { recursive: true });
-
   const existingPrimary = await prisma.startupFile.findFirst({
     where: { startupId, isPrimary: true },
   });
@@ -114,7 +96,7 @@ export async function saveStartupFiles(
       ? requestedPrimary
       : fallbackPrimary;
 
-  const createdOnDisk: string[] = [];
+  const createdOnStorage: string[] = [];
   const createdIds: string[] = [];
 
   try {
@@ -132,8 +114,8 @@ export async function saveStartupFiles(
       }
 
       const filename = `${Date.now()}-${i}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-      await writeFile(path.join(uploadDir, filename), buffer);
-      createdOnDisk.push(filename);
+      await putFile(startupId, filename, buffer, mimeType);
+      createdOnStorage.push(filename);
 
       const shouldBePrimary =
         isPdfMime(mimeType) &&
@@ -163,8 +145,8 @@ export async function saveStartupFiles(
 
     return createdIds;
   } catch (err) {
-    for (const filename of createdOnDisk) {
-      await removeFileFromDisk(startupId, filename);
+    for (const filename of createdOnStorage) {
+      await removeFile(startupId, filename);
     }
     if (createdIds.length > 0) {
       await prisma.startupFile.deleteMany({

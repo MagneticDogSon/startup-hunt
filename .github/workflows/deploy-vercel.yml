@@ -28,7 +28,8 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          DATABASE_URL: file:./dev.db
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+          DIRECT_URL: postgresql://ci:ci@localhost:5432/ci
           AUTH_SECRET: ci-build-secret-min-32-chars-long-xx
           ADMIN_EMAIL: admin@ci.local
           ADMIN_PASSWORD: ci-password

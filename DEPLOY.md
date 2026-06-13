@@ -1,30 +1,100 @@
-# Деплой Startup Hunt в интернет
+# Деплой: GitHub + Supabase + Vercel
 
-## Репозиторий
+Бесплатный стек для полной платформы Startup Hunt.
 
-https://github.com/MagneticDogSon/startup-hunt
+| Сервис | Роль |
+|--------|------|
+| [GitHub](https://github.com/MagneticDogSon/startup-hunt) | Код, CI |
+| [Supabase](https://supabase.com) | Postgres + файлы |
+| [Vercel](https://vercel.com) | Next.js хостинг |
 
-## Вариант A — Render (рекомендуется для SQLite + загрузки файлов)
+Лендинг (статика): [startup-hunt-landing](https://magneticdogson.github.io/startup-hunt-landing/) на GitHub Pages.
 
-1. Откройте https://dashboard.render.com/select-repo?type=blueprint
-2. Подключите GitHub и выберите `startup-hunt`
-3. Render подхватит `render.yaml` автоматически
-4. В панели сервиса задайте:
-   - `AUTH_URL` — URL вида `https://startup-hunt-xxxx.onrender.com`
-   - `ADMIN_EMAIL` / `ADMIN_PASSWORD` — учётка администратора
-5. После деплоя откройте URL из Render Dashboard
+---
 
-## Вариант B — Vercel
+## 1. Supabase
 
-1. Импортируйте репозиторий на https://vercel.com/new
-2. Добавьте переменные окружения из `.env.example`
-3. Для CI добавьте secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
+1. Создайте проект на https://supabase.com/dashboard  
+2. **Database** → Connection string:
+   - **Transaction pooler** (port `6543`) → `DATABASE_URL`
+   - **Direct** (port `5432`) → `DIRECT_URL`
+3. **Storage** → New bucket:
+   - Name: `startup-files`
+   - **Private** bucket (доступ только через service role на сервере)
+4. **Project Settings → API**:
+   - `Project URL` → `SUPABASE_URL`
+   - `service_role` key → `SUPABASE_SERVICE_ROLE_KEY` (только на сервере, не в клиенте)
 
-> SQLite на serverless-хостинге эфемерен — для продакшена лучше Render с диском (`render.yaml`).
+### Миграции БД (один раз)
 
-## Локальный push
+```bash
+cp .env.example .env
+# заполните DATABASE_URL и DIRECT_URL
 
-```powershell
-cd production
-git push -u origin main
+npm install
+npx prisma migrate deploy
+npm run db:seed
 ```
+
+---
+
+## 2. Vercel
+
+1. https://vercel.com/new → Import `MagneticDogSon/startup-hunt`
+2. **Environment Variables** (Production):
+
+| Variable | Значение |
+|----------|----------|
+| `DATABASE_URL` | Pooler URL (6543, `?pgbouncer=true`) |
+| `DIRECT_URL` | Direct URL (5432) |
+| `SUPABASE_URL` | `https://xxx.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | service_role key |
+| `AUTH_SECRET` | `openssl rand -base64 32` |
+| `AUTH_URL` | `https://your-app.vercel.app` |
+| `ENFORCE_HTTPS` | `true` |
+| `ADMIN_EMAIL` | email админа |
+| `ADMIN_PASSWORD` | надёжный пароль |
+
+3. Deploy — `vercel.json` выполнит `prisma migrate deploy` при сборке.
+
+После первого деплоя (опционально):
+
+```bash
+npm run db:seed
+```
+
+локально с production `DATABASE_URL`, или создайте админа через регистрацию + SQL.
+
+---
+
+## 3. GitHub Actions (опционально)
+
+Файл `.github/workflows/deploy-vercel.yml` — автодеплой при push в `main`.
+
+Secrets в репозитории:
+
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+---
+
+## Локальная разработка
+
+```bash
+npm install
+cp .env.example .env
+# Postgres: Supabase connection strings
+# Storage: можно не задавать SUPABASE_* — файлы пойдут в ./uploads/
+
+npx prisma migrate deploy
+npm run db:seed
+npm run dev
+```
+
+---
+
+## Лимиты Free tier
+
+- **Supabase**: 500 MB БД, 1 GB Storage, пауза после 1 недели без активности
+- **Vercel Hobby**: личные проекты, ~1M function invocations/мес

@@ -1,6 +1,7 @@
 'use client';
 
 import { Menu, X } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { cn } from '@/shared/lib/utils';
 
@@ -58,6 +59,28 @@ export function LandingMobileNav() {
               </li>
             ))}
           </ul>
+          <div className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
+            <Link
+              href="/login"
+              onClick={() => setOpen(false)}
+              className={cn(
+                'block rounded-lg px-3 py-2.5 text-center text-sm font-medium text-muted transition-colors duration-200 hover:bg-background hover:text-foreground',
+                focusRing,
+              )}
+            >
+              Войти
+            </Link>
+            <Link
+              href="/register"
+              onClick={() => setOpen(false)}
+              className={cn(
+                'block rounded-lg bg-primary px-3 py-2.5 text-center text-sm font-medium text-white transition-colors duration-200 hover:bg-primary-hover',
+                focusRing,
+              )}
+            >
+              Регистрация
+            </Link>
+          </div>
         </nav>
       )}
     </div>
