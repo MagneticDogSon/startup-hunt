@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -63,6 +63,26 @@ const features = [
 
 export function LandingPage() {
   const [activeTab, setActiveTab] = useState<'founder' | 'evaluator'>('founder');
+  const [activeSection, setActiveSection] = useState('hero');
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries.find((entry) => entry.isIntersecting);
+        if (visibleEntry?.target.id) {
+          setActiveSection(visibleEntry.target.id);
+        }
+      },
+      { rootMargin: '-30% 0px -55% 0px', threshold: 0.01 },
+    );
+
+    ['hero', ...navLinks.map((link) => link.href.slice(1))].forEach((id) => {
+      const section = document.getElementById(id);
+      if (section) observer.observe(section);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background font-sans text-foreground antialiased bg-dot-pattern">
@@ -75,7 +95,13 @@ export function LandingPage() {
               <a
                 key={link.href}
                 href={link.href}
-                className="transition-colors hover:text-foreground relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full"
+                aria-current={activeSection === link.href.slice(1) ? 'true' : undefined}
+                className={cn(
+                  'relative transition-colors after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:bg-primary after:transition-all hover:text-foreground hover:after:w-full',
+                  activeSection === link.href.slice(1)
+                    ? 'text-primary after:w-full'
+                    : 'after:w-0',
+                )}
               >
                 {link.label}
               </a>
@@ -237,18 +263,18 @@ export function LandingPage() {
                       </div>
 
                       <div className="flex items-center gap-1 rounded-sm border border-border-cool bg-background-soft p-1">
-                        <div className="rounded-xs p-1 text-faint transition-transform hover:scale-120 hover:text-primary duration-150">
+                        <div className="rounded-xs p-1 text-faint transition-all hover:scale-120 hover:text-upvote hover:shadow-[0_0_8px_color-mix(in_srgb,var(--upvote)_45%,transparent)] duration-150">
                           <ChevronUp className="h-4 w-4" />
                         </div>
                         <span
                           className={cn(
                             'min-w-[20px] px-1.5 text-center font-mono text-xs font-semibold',
-                            startup.score > 0 ? 'text-success' : 'text-muted',
+                            startup.score > 0 ? 'text-upvote' : startup.score < 0 ? 'text-downvote' : 'text-muted',
                           )}
                         >
                           {startup.score}
                         </span>
-                        <div className="rounded-xs p-1 text-faint transition-transform hover:scale-120 hover:text-downvote duration-150">
+                        <div className="rounded-xs p-1 text-faint transition-all hover:scale-120 hover:text-downvote hover:shadow-[0_0_8px_color-mix(in_srgb,var(--downvote)_45%,transparent)] duration-150">
                           <ChevronDown className="h-4 w-4" />
                         </div>
                       </div>
@@ -278,9 +304,16 @@ export function LandingPage() {
               Два разных сценария — для фаундера стартапа и для эксперта-оценщика.
             </p>
 
-            <div className="mt-6 inline-flex rounded-md border border-border bg-background-soft p-1 shadow-sm">
+            <div
+              role="tablist"
+              aria-label="Сценарий использования"
+              className="mt-6 inline-flex rounded-md border border-border bg-background-soft p-1 shadow-sm"
+            >
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeTab === 'founder'}
+                aria-controls="founder-panel"
                 onClick={() => setActiveTab('founder')}
                 className={cn(
                   'rounded-sm px-5 py-2 text-sm font-medium transition-all duration-200 cursor-pointer',
@@ -293,6 +326,9 @@ export function LandingPage() {
               </button>
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeTab === 'evaluator'}
+                aria-controls="evaluator-panel"
                 onClick={() => setActiveTab('evaluator')}
                 className={cn(
                   'rounded-sm px-5 py-2 text-sm font-medium transition-all duration-200 cursor-pointer',
@@ -306,7 +342,11 @@ export function LandingPage() {
             </div>
           </div>
 
-          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
+          <div
+            id={activeTab === 'founder' ? 'founder-panel' : 'evaluator-panel'}
+            role="tabpanel"
+            className="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2"
+          >
             {activeTab === 'founder' ? (
               <>
                 <div className="rounded-lg border border-border bg-surface p-8 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 duration-200">

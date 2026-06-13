@@ -4,7 +4,7 @@ import {
   focusRing,
   linkTouch,
 } from '@/modules/auth/components/auth-page-shell';
-import { Button } from '@/shared/components/ui/button';
+import { RegisterSubmitButton } from '@/modules/auth/components/auth-submit-button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { cn } from '@/shared/lib/utils';
@@ -34,19 +34,28 @@ export function RegisterForm({
         <p className="mb-6 text-center text-xs text-muted">{description}</p>
 
         {error === 'exists' && (
-          <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-error">
+          <p
+            role="alert"
+            className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-error"
+          >
             Пользователь с таким email уже существует
           </p>
         )}
 
         {error === 'rate' && (
-          <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-error">
+          <p
+            role="alert"
+            className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-error"
+          >
             Слишком много попыток регистрации. Подождите минуту.
           </p>
         )}
 
         {error === 'validation' && (
-          <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-error">
+          <p
+            role="alert"
+            className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-error"
+          >
             Проверьте введённые данные
           </p>
         )}
@@ -72,14 +81,12 @@ export function RegisterForm({
               id="password"
               name="password"
               type="password"
-              minLength={8}
+              minLength={10}
               required
               autoComplete="new-password"
             />
           </div>
-          <Button type="submit" className="w-full">
-            Зарегистрироваться
-          </Button>
+          <RegisterSubmitButton />
         </form>
 
         <p className="mt-6 text-center text-sm text-muted">

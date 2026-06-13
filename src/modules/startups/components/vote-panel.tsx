@@ -24,6 +24,7 @@ export function VotePanel({
   const [loading, setLoading] = useState(false);
   const [localScore, setLocalScore] = useState(score);
   const [localVote, setLocalVote] = useState(userVote);
+  const [flashVote, setFlashVote] = useState<1 | -1 | null>(null);
 
   async function vote(value: 1 | -1) {
     if (!canVote || loading) return;
@@ -43,6 +44,7 @@ export function VotePanel({
 
     setLocalVote(newVote);
     setLocalScore(prevScore + delta);
+    setFlashVote(value);
     setLoading(true);
 
     try {
@@ -63,6 +65,7 @@ export function VotePanel({
       setLocalScore(prevScore);
     } finally {
       setLoading(false);
+      window.setTimeout(() => setFlashVote(null), 600);
     }
   }
 
@@ -78,6 +81,7 @@ export function VotePanel({
       <div
         className={cn(
           'flex shrink-0 flex-col items-center gap-1 rounded-lg px-1.5 py-1 transition-all duration-300',
+          flashVote && 'vote-flash-animation',
           hasVoted
             ? localVote === 1
               ? 'bg-upvote/10 ring-2 ring-upvote/30'
@@ -106,15 +110,16 @@ export function VotePanel({
           className={cn(
             'flex min-h-11 min-w-11 items-center justify-center rounded-md transition-all duration-200 disabled:opacity-40 hover:scale-110 active:scale-90',
             localVote === 1
-              ? 'bg-upvote/20 text-upvote shadow-sm'
+              ? 'bg-upvote/20 text-upvote shadow-[0_0_12px_color-mix(in_srgb,var(--upvote)_45%,transparent)]'
               : hasVoted
                 ? 'text-muted/40'
-                : 'text-muted hover:bg-upvote/10 hover:text-upvote',
+                : 'text-muted hover:bg-upvote/10 hover:text-upvote hover:shadow-[0_0_10px_color-mix(in_srgb,var(--upvote)_40%,transparent)]',
           )}
         >
           <ChevronUp className="h-5 w-5 stroke-[2.5]" />
         </button>
         <span
+          aria-live="polite"
           className={cn(
             'min-w-[2ch] text-center text-sm font-bold tabular-nums leading-none transition-colors duration-200',
             localVote === 1 && 'text-upvote',
@@ -136,10 +141,10 @@ export function VotePanel({
           className={cn(
             'flex min-h-11 min-w-11 items-center justify-center rounded-md transition-all duration-200 disabled:opacity-40 hover:scale-110 active:scale-90',
             localVote === -1
-              ? 'bg-downvote/15 text-downvote shadow-sm'
+              ? 'bg-downvote/15 text-downvote shadow-[0_0_12px_color-mix(in_srgb,var(--downvote)_45%,transparent)]'
               : hasVoted
                 ? 'text-muted/40'
-                : 'text-muted hover:bg-downvote/10 hover:text-downvote',
+                : 'text-muted hover:bg-downvote/10 hover:text-downvote hover:shadow-[0_0_10px_color-mix(in_srgb,var(--downvote)_40%,transparent)]',
           )}
         >
           <ChevronDown className="h-5 w-5 stroke-[2.5]" />
@@ -154,6 +159,7 @@ export function VotePanel({
       <div
         className={cn(
           'inline-flex items-center gap-0.5 rounded-lg border border-gray-200 bg-background p-0.5 transition-all duration-300 shadow-sm hover:shadow',
+          flashVote && 'vote-flash-animation',
           hasVoted && !compact && localVote === 1 && 'ring-2 ring-upvote/30 border-upvote/30',
           hasVoted && !compact && localVote === -1 && 'ring-2 ring-downvote/20 border-downvote/20',
         )}
@@ -170,13 +176,14 @@ export function VotePanel({
           className={cn(
             'rounded p-1.5 transition-all duration-200 disabled:opacity-40 hover:scale-110 active:scale-90',
             localVote === 1
-              ? 'bg-primary/15 text-primary font-bold'
-              : 'text-muted hover:bg-primary/10 hover:text-primary',
+              ? 'bg-upvote/15 text-upvote font-bold shadow-[0_0_12px_color-mix(in_srgb,var(--upvote)_45%,transparent)]'
+              : 'text-muted hover:bg-upvote/10 hover:text-upvote hover:shadow-[0_0_10px_color-mix(in_srgb,var(--upvote)_40%,transparent)]',
           )}
         >
           <ChevronUp className="h-4 w-4 stroke-[2.5]" />
         </button>
         <span
+          aria-live="polite"
           className={cn(
             'min-w-[20px] px-2 text-center font-mono text-xs font-bold tabular-nums transition-colors duration-200',
             localScore > 0 && 'text-success',
@@ -198,8 +205,8 @@ export function VotePanel({
           className={cn(
             'rounded p-1.5 transition-all duration-200 disabled:opacity-40 hover:scale-110 active:scale-90',
             localVote === -1
-              ? 'bg-downvote/15 text-downvote font-bold'
-              : 'text-muted hover:bg-downvote/10 hover:text-downvote',
+              ? 'bg-downvote/15 text-downvote font-bold shadow-[0_0_12px_color-mix(in_srgb,var(--downvote)_45%,transparent)]'
+              : 'text-muted hover:bg-downvote/10 hover:text-downvote hover:shadow-[0_0_10px_color-mix(in_srgb,var(--downvote)_40%,transparent)]',
           )}
         >
           <ChevronDown className="h-4 w-4 stroke-[2.5]" />
@@ -212,16 +219,18 @@ export function VotePanel({
     <div
       className={cn(
         'flex w-[4.5rem] shrink-0 flex-col items-center rounded-xl border-2 bg-surface py-2 transition-all duration-300 shadow-sm hover:shadow-md',
+        flashVote && 'vote-flash-animation',
         localVote === 1
-          ? 'border-primary/40'
+          ? 'border-upvote/40 shadow-[0_0_14px_color-mix(in_srgb,var(--upvote)_30%,transparent)]'
           : localVote === -1
-            ? 'border-downvote/30'
-            : 'border-border hover:border-primary/20',
+            ? 'border-downvote/40 shadow-[0_0_14px_color-mix(in_srgb,var(--downvote)_30%,transparent)]'
+            : 'border-border hover:border-upvote/20',
       )}
     >
       <button
         type="button"
         aria-label="Голосовать за"
+        aria-pressed={localVote === 1}
         disabled={!canVote || loading}
         onClick={(e) => {
           stopNav(e);
@@ -230,14 +239,15 @@ export function VotePanel({
         className={cn(
           'flex h-10 w-full items-center justify-center rounded-t-lg transition-all duration-200 disabled:opacity-40 hover:scale-110 active:scale-90',
           localVote === 1
-            ? 'bg-primary/10 text-upvote'
-            : 'text-muted hover:bg-primary/5 hover:text-upvote',
+            ? 'bg-upvote/10 text-upvote shadow-[0_0_12px_color-mix(in_srgb,var(--upvote)_45%,transparent)]'
+            : 'text-muted hover:bg-upvote/5 hover:text-upvote hover:shadow-[0_0_10px_color-mix(in_srgb,var(--upvote)_40%,transparent)]',
         )}
       >
         <ChevronUp className="h-6 w-6 stroke-[2.5]" />
       </button>
 
       <span
+        aria-live="polite"
         className={cn(
           'py-1 text-xl font-bold tabular-nums leading-none transition-colors duration-200',
           localVote === 1 && 'text-upvote',
@@ -251,6 +261,7 @@ export function VotePanel({
       <button
         type="button"
         aria-label="Голосовать против"
+        aria-pressed={localVote === -1}
         disabled={!canVote || loading}
         onClick={(e) => {
           stopNav(e);
@@ -259,8 +270,8 @@ export function VotePanel({
         className={cn(
           'flex h-10 w-full items-center justify-center rounded-b-lg transition-all duration-200 disabled:opacity-40 hover:scale-110 active:scale-90',
           localVote === -1
-            ? 'bg-downvote/10 text-downvote'
-            : 'text-muted hover:bg-downvote/5 hover:text-downvote',
+            ? 'bg-downvote/10 text-downvote shadow-[0_0_12px_color-mix(in_srgb,var(--downvote)_45%,transparent)]'
+            : 'text-muted hover:bg-downvote/5 hover:text-downvote hover:shadow-[0_0_10px_color-mix(in_srgb,var(--downvote)_40%,transparent)]',
         )}
       >
         <ChevronDown className="h-6 w-6 stroke-[2.5]" />

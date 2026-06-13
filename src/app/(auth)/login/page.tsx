@@ -5,7 +5,7 @@ import {
   focusRing,
   linkTouch,
 } from '@/modules/auth/components/auth-page-shell';
-import { Button } from '@/shared/components/ui/button';
+import { LoginSubmitButton } from '@/modules/auth/components/auth-submit-button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { cn } from '@/shared/lib/utils';
@@ -26,20 +26,29 @@ export default async function LoginPage({
         </p>
 
         {params.registered === 'founder' && (
-          <p className="mb-4 rounded-md bg-green-50 px-3 py-2 text-sm text-success">
+          <p
+            role="status"
+            className="mb-4 rounded-md bg-green-50 px-3 py-2 text-sm text-success"
+          >
             Регистрация основателя успешна. Войдите в аккаунт — администратор
             подтвердит доступ к публикации стартапов.
           </p>
         )}
 
         {params.error === 'rate' && (
-          <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-error">
+          <p
+            role="alert"
+            className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-error"
+          >
             Слишком много попыток входа. Подождите минуту.
           </p>
         )}
 
         {params.error && params.error !== 'rate' && (
-          <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-error">
+          <p
+            role="alert"
+            className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-error"
+          >
             Неверный email или пароль
           </p>
         )}
@@ -53,9 +62,7 @@ export default async function LoginPage({
             <Label htmlFor="password">Пароль</Label>
             <Input id="password" name="password" type="password" required />
           </div>
-          <Button type="submit" className="w-full">
-            Войти
-          </Button>
+          <LoginSubmitButton />
         </form>
 
         <p className="mt-6 text-center text-sm text-muted">

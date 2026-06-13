@@ -9,18 +9,23 @@ import { Button } from '@/shared/components/ui/button';
 function StartupRow({
   startup,
   rank,
+  index,
   voting,
   userId,
 }: {
   startup: StartupListItem;
   rank: number;
+  index: number;
   voting: boolean;
   userId: string;
 }) {
   const rowCanVote = voting && canVoteOnStartup(userId, startup.authorId);
 
   return (
-    <tr className="startup-card-fade-in transition-all duration-200 border-l-2 border-l-transparent hover:border-l-primary hover:bg-blue-50/20">
+    <tr
+      className="startup-card-fade-in border-l-2 border-l-transparent transition-all duration-200 hover:border-l-primary hover:bg-primary/5"
+      style={{ animationDelay: `${Math.min(index * 35, 240)}ms` }}
+    >
       <td className="px-6 py-4 text-center font-mono text-xs font-semibold text-muted">
         {rank}
       </td>
@@ -39,9 +44,9 @@ function StartupRow({
         </div>
       </td>
 
-      <td className="px-6 py-4 text-xs font-medium text-gray-700">
+      <td className="px-6 py-4 text-xs font-medium text-muted">
         <div className="flex items-center gap-2">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md border border-gray-200 bg-background text-[10px] font-bold text-muted">
+          <div className="flex h-6 w-6 items-center justify-center rounded-md border border-border bg-background text-[11px] font-bold text-muted">
             {startup.authorName.charAt(0)}
           </div>
           <span className="truncate">{startup.authorName}</span>
@@ -49,7 +54,7 @@ function StartupRow({
       </td>
 
       <td className="px-6 py-4 text-center text-xs">
-        <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 font-mono text-[10px] text-gray-600">
+        <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 font-mono text-[11px] text-muted">
           <FileText className="h-3.5 w-3.5 text-muted" />
           {startup.fileCount}
         </span>
@@ -58,7 +63,7 @@ function StartupRow({
       <td className="px-6 py-4 text-center text-xs">
         <Link
           href={`/startups/${startup.id}#comments`}
-          className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 font-mono text-[10px] text-gray-600 hover:text-primary"
+          className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 font-mono text-[11px] text-muted transition-colors hover:text-primary"
         >
           <MessageSquare className="h-3.5 w-3.5 text-muted" />
           {startup.commentCount}
@@ -83,29 +88,39 @@ export function StartupTable({
   startups,
   userRole,
   userId,
+  hasActiveFilters = false,
 }: {
   startups: StartupListItem[];
   userRole: Role;
   userId: string;
+  hasActiveFilters?: boolean;
 }) {
   const voting = canVote(userRole);
 
   if (startups.length === 0) {
     return (
       <div className="rounded-2xl border border-border bg-surface px-6 py-16 text-center">
-        <p className="text-lg font-bold text-foreground">Пока нет стартапов</p>
-        <p className="mt-1 text-sm text-muted">
-          {canCreateStartup(userRole)
-            ? 'Создайте первую карточку — она появится в общем рейтинге.'
-            : 'Загляните позже или измените фильтры поиска.'}
+        <p className="text-lg font-bold text-foreground">
+          {hasActiveFilters ? 'Ничего не найдено' : 'Пока нет стартапов'}
         </p>
-        {canCreateStartup(userRole) && (
+        <p className="mt-1 text-sm text-muted">
+          {hasActiveFilters
+            ? 'Измените запрос, сортировку или сбросьте фильтры.'
+            : canCreateStartup(userRole)
+              ? 'Создайте первую карточку — она появится в общем рейтинге.'
+              : 'Загляните позже — новые проекты появятся после публикации.'}
+        </p>
+        {hasActiveFilters ? (
+          <Link href="/startups" className="mt-6 inline-block">
+            <Button variant="outline">Сбросить фильтры</Button>
+          </Link>
+        ) : canCreateStartup(userRole) ? (
           <Link href="/startups/new" className="mt-6 inline-block">
             <Button>
               <span className="mr-1.5">+</span> Подать стартап
             </Button>
           </Link>
-        )}
+        ) : null}
       </div>
     );
   }
@@ -114,14 +129,17 @@ export function StartupTable({
     <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left">
+          <caption className="sr-only">
+            Каталог стартапов с рейтингом, автором, вложениями, отзывами и голосованием
+          </caption>
           <thead>
             <tr className="border-b border-border bg-background font-mono text-[11px] uppercase tracking-wider text-muted">
-              <th className="w-12 px-6 py-4 text-center">Ранг</th>
-              <th className="px-6 py-4">Проект</th>
-              <th className="w-44 px-6 py-4">Основатель</th>
-              <th className="w-28 px-6 py-4 text-center">Вложений</th>
-              <th className="w-28 px-6 py-4 text-center">Отзывы</th>
-              <th className="w-36 px-6 py-4 text-center">Голосование</th>
+              <th scope="col" className="w-12 px-6 py-4 text-center">Ранг</th>
+              <th scope="col" className="px-6 py-4">Проект</th>
+              <th scope="col" className="w-44 px-6 py-4">Основатель</th>
+              <th scope="col" className="w-28 px-6 py-4 text-center">Вложений</th>
+              <th scope="col" className="w-28 px-6 py-4 text-center">Отзывы</th>
+              <th scope="col" className="w-36 px-6 py-4 text-center">Голосование</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border text-foreground">
@@ -130,6 +148,7 @@ export function StartupTable({
                 key={startup.id}
                 startup={startup}
                 rank={index + 1}
+                index={index}
                 voting={voting}
                 userId={userId}
               />

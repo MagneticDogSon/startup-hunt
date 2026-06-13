@@ -1,4 +1,5 @@
 ﻿import { Search } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Select } from '@/shared/components/ui/select';
@@ -19,6 +20,7 @@ export function StartupFilters({
   totalCount?: number;
 }) {
   const activeSort = sort === 'date' ? 'newest' : 'score';
+  const hasActiveFilters = Boolean(q?.trim()) || activeSort !== 'score' || vote !== 'all';
 
   return (
     <form
@@ -36,13 +38,19 @@ export function StartupFilters({
       </div>
 
       <div className="flex w-full flex-wrap items-center justify-end gap-4 md:w-auto">
-        <span className="text-xs font-medium text-muted">Сортировка:</span>
+        <span id="startup-sort-label" className="text-xs font-medium text-muted">
+          Сортировка:
+        </span>
 
-        <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs font-semibold">
+        <div
+          className="flex rounded-lg bg-background-soft p-0.5 text-xs font-semibold"
+          aria-labelledby="startup-sort-label"
+        >
           <button
             type="submit"
             name="sort"
             value="score"
+            aria-pressed={activeSort === 'score'}
             className={`rounded-md px-3 py-1.5 transition-all ${
               activeSort === 'score'
                 ? 'bg-surface text-foreground shadow-sm'
@@ -55,6 +63,7 @@ export function StartupFilters({
             type="submit"
             name="sort"
             value="date"
+            aria-pressed={activeSort === 'newest'}
             className={`rounded-md px-3 py-1.5 transition-all ${
               activeSort === 'newest'
                 ? 'bg-surface text-foreground shadow-sm'
@@ -84,6 +93,15 @@ export function StartupFilters({
         <Button type="submit" size="sm" variant="outline">
           Найти
         </Button>
+
+        {hasActiveFilters && (
+          <Link
+            href="/startups"
+            className="inline-flex min-h-8 items-center rounded-sm px-2 text-xs font-medium text-muted transition-colors hover:text-primary"
+          >
+            Сбросить
+          </Link>
+        )}
       </div>
     </form>
   );

@@ -39,6 +39,10 @@ export default async function StartupsPage({
 
   const isFounder = canCreateStartup(session.user.role);
   const isEvaluator = canVote(session.user.role) && !isFounder;
+  const hasActiveFilters =
+    Boolean(params.q?.trim()) ||
+    params.sort === 'date' ||
+    voteFilter !== 'all';
 
   return (
     <DashboardShell>
@@ -82,6 +86,7 @@ export default async function StartupsPage({
           startups={startups}
           userRole={session.user.role}
           userId={session.user.id}
+          hasActiveFilters={hasActiveFilters}
         />
       </div>
     </DashboardShell>

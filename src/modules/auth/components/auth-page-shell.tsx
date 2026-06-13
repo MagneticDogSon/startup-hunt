@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { BrandLogo } from '@/shared/components/brand-logo';
+import { cn } from '@/shared/lib/utils';
 
 const focusRing =
   'rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
@@ -14,7 +15,11 @@ export function AuthPageShell({ children }: { children: React.ReactNode }) {
       <div className="absolute left-6 top-6">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-primary"
+          className={cn(
+            linkTouch,
+            focusRing,
+            'inline-flex items-center gap-2 text-sm text-muted hover:text-primary',
+          )}
         >
           <ArrowLeft className="h-4 w-4" />
           Вернуться на главную

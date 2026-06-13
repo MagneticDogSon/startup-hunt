@@ -86,9 +86,29 @@ export default async function StartupDetailPage({
 
   return (
     <DashboardShell>
+      <nav
+        aria-label="Хлебные крошки"
+        className="mb-4 text-sm text-muted"
+      >
+        <ol className="flex flex-wrap items-center gap-2">
+          <li>
+            <Link
+              href="/startups"
+              className="font-medium text-primary transition-colors hover:text-primary-hover"
+            >
+              Стартапы
+            </Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li className="max-w-[32rem] truncate text-foreground">
+            {startup.title}
+          </li>
+        </ol>
+      </nav>
+
       <div className="mb-6 flex items-start justify-between gap-4 rounded-2xl border border-border bg-surface p-6">
         <div>
-          <span className="rounded bg-primary/5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary">
+          <span className="rounded bg-primary/5 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary">
             Карточка проекта
           </span>
           <h1 className="mt-2 text-2xl font-bold text-foreground">{startup.title}</h1>
@@ -130,7 +150,7 @@ export default async function StartupDetailPage({
         <h2 className="mb-3 font-mono text-xs font-bold uppercase tracking-wider text-muted">
           Описание стартапа
         </h2>
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700">
+        <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted">
           {startup.description}
         </p>
       </div>
@@ -152,7 +172,10 @@ export default async function StartupDetailPage({
       />
 
       <div className="mt-8">
-        <Link href="/startups" className="text-sm text-muted hover:text-primary">
+        <Link
+          href="/startups"
+          className="text-sm text-muted transition-colors hover:text-primary"
+        >
           ← Назад к списку
         </Link>
       </div>

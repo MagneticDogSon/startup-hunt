@@ -78,6 +78,7 @@ export function StartupFilesDisplay({
 
       {lightboxIndex !== null && gallery.length > 0 && (
         <MaterialLightbox
+          key={lightboxIndex}
           files={gallery}
           initialIndex={lightboxIndex}
           onClose={() => setLightboxIndex(null)}

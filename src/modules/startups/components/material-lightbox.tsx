@@ -40,10 +40,6 @@ export function MaterialLightbox({
   }, [files.length]);
 
   useEffect(() => {
-    setIndex(initialIndex);
-  }, [initialIndex]);
-
-  useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {

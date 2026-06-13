@@ -4,15 +4,16 @@ import { Role } from '@/modules/auth/lib/roles';
 import { canManageRoles } from '@/shared/lib/permissions';
 import { signOutAction } from '@/modules/auth/actions/auth';
 import { BrandLogo } from '@/shared/components/brand-logo';
+import { AppNavLinks } from '@/modules/auth/components/app-nav-links';
 
 function roleShortLabel(role: Role): string {
   switch (role) {
     case Role.ADMIN:
-      return 'Администратор ⚙️';
+      return 'Администратор';
     case Role.EVALUATOR:
-      return 'Оценщик ▲';
+      return 'Оценщик';
     case Role.FOUNDER:
-      return 'Основатель ☕';
+      return 'Основатель';
     default:
       return 'Ожидание';
   }
@@ -26,9 +27,14 @@ export function Navbar({
   role: Role;
 }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-surface">
+    <header className="sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <BrandLogo href="/startups" size="md" showPlatformBadge />
+        <div className="flex items-center gap-6">
+          <BrandLogo href="/startups" size="md" showPlatformBadge />
+          <div className="hidden md:block">
+            <AppNavLinks role={role} />
+          </div>
+        </div>
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -39,7 +45,7 @@ export function Navbar({
               <div className="max-w-[120px] truncate font-bold text-foreground">
                 {name}
               </div>
-              <div className="font-mono text-[9px] font-bold capitalize text-muted">
+              <div className="font-mono text-[11px] font-semibold capitalize text-muted">
                 {roleShortLabel(role)}
               </div>
             </div>
@@ -49,8 +55,8 @@ export function Navbar({
             {canManageRoles(role) && (
               <Link
                 href="/admin"
-                className="rounded-lg p-2 text-muted transition-colors hover:bg-purple-50 hover:text-purple-600"
-                title="Управление пользователями"
+                aria-label="Управление пользователями"
+                className="rounded-lg p-2 text-muted transition-colors hover:bg-primary/10 hover:text-primary"
               >
                 <Settings className="h-[18px] w-[18px]" />
               </Link>
@@ -59,8 +65,8 @@ export function Navbar({
             <form action={signOutAction}>
               <button
                 type="submit"
-                className="rounded-lg p-2 text-muted transition-colors hover:bg-red-50 hover:text-primary"
-                title="Выйти из аккаунта"
+                aria-label="Выйти из аккаунта"
+                className="rounded-lg p-2 text-muted transition-colors hover:bg-downvote/10 hover:text-downvote"
               >
                 <LogOut className="h-[18px] w-[18px]" />
               </button>
