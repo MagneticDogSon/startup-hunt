@@ -1,37 +1,84 @@
 @import 'tailwindcss';
 
 :root {
-  --primary: #ff6154;
-  --primary-hover: #e5564a;
-  --background: #fafafa;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #60a5fa;
+  --background: #ffffff;
+  --background-soft: #fafafa;
   --surface: #ffffff;
-  --text: #1a1a1a;
-  --text-muted: #6b7280;
-  --border: #e5e7eb;
-  --upvote: #ff6154;
-  --downvote: #6b7280;
-  --error: #dc2626;
-  --success: #16a34a;
+  --canvas-night: #1c1c1c;
+  --canvas-night-soft: #202020;
+  --text: #171717;
+  --text-secondary: #212121;
+  --text-muted: #707070;
+  --text-muted-2: #9a9a9a;
+  --text-faint: #b2b2b2;
+  --on-primary: #ffffff;
+  --on-dark: #ffffff;
+  --border: #dfdfdf;
+  --border-strong: #c7c7c7;
+  --border-cool: #ededed;
+  --upvote: #2563eb;
+  --downvote: #707070;
+  --error: #ff2201;
+  --success: #1d4ed8;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
 }
 
 @theme inline {
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
   --color-background: var(--background);
+  --color-background-soft: var(--background-soft);
   --color-surface: var(--surface);
+  --color-canvas-night: var(--canvas-night);
+  --color-canvas-night-soft: var(--canvas-night-soft);
   --color-foreground: var(--text);
+  --color-foreground-secondary: var(--text-secondary);
   --color-muted: var(--text-muted);
+  --color-muted-2: var(--text-muted-2);
+  --color-faint: var(--text-faint);
+  --color-on-primary: var(--on-primary);
+  --color-on-dark: var(--on-dark);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-cool: var(--border-cool);
   --color-upvote: var(--upvote);
   --color-downvote: var(--downvote);
+  --color-error: var(--error);
+  --color-success: var(--success);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-mono: ui-monospace, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
 }
 
 body {
   background: var(--background);
   color: var(--text);
   font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .font-mono {
@@ -44,6 +91,35 @@ a:visited:not([class*='bg-']) {
 
 a:focus-visible {
   outline: none;
+}
+
+/* Фоновые паттерны для устранения "пустоты" */
+.bg-grid-pattern {
+  background-size: 24px 24px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+}
+
+.bg-dot-pattern {
+  background-size: 20px 24px;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+}
+
+/* Анимации появления элементов */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes startupFadeIn {
@@ -59,7 +135,7 @@ a:focus-visible {
 
 @keyframes voteFlash {
   0% {
-    background-color: rgba(255, 97, 84, 0.2);
+    background-color: rgba(37, 99, 235, 0.2);
     transform: scale(0.98);
   }
   100% {
