@@ -25,21 +25,16 @@ jobs:
       - name: Prisma generate
         run: npx prisma generate
 
-      - name: Build
-        run: npm run build
-        env:
-          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
-          DIRECT_URL: postgresql://ci:ci@localhost:5432/ci
-          AUTH_SECRET: ci-build-secret-min-32-chars-long-xx
-          ADMIN_EMAIL: admin@ci.local
-          ADMIN_PASSWORD: ci-password
-
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
       - name: Pull Vercel env
         if: env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != ''
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build for Vercel
+        if: env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != ''
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to Vercel
         if: env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != ''
