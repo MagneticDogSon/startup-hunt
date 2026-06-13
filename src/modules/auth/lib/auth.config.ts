@@ -4,6 +4,7 @@ import { shouldEnforceHttps } from '@/shared/lib/security';
 
 export const authConfig = {
   session: { strategy: 'jwt' },
+  secret: process.env.AUTH_SECRET,
   // Required for Auth.js on localhost and behind TLS proxies (separate from cookie security).
   trustHost: true,
   useSecureCookies: shouldEnforceHttps(),

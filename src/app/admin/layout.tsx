@@ -3,6 +3,8 @@ import { AdminShell } from '@/modules/admin/components/admin-shell';
 import { canManageRoles } from '@/shared/lib/permissions';
 import { authWithFreshRole } from '@/modules/auth/lib/session';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminLayout({
   children,
 }: {
