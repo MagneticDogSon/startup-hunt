@@ -20,7 +20,7 @@ function StartupRow({
   const rowCanVote = voting && canVoteOnStartup(userId, startup.authorId);
 
   return (
-    <tr className="startup-card-fade-in transition-colors hover:bg-gray-50/50">
+    <tr className="startup-card-fade-in transition-all duration-200 border-l-2 border-l-transparent hover:border-l-primary hover:bg-blue-50/20">
       <td className="px-6 py-4 text-center font-mono text-xs font-semibold text-muted">
         {rank}
       </td>
